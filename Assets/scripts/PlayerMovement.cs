@@ -1,12 +1,16 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerMovement : MonoBehaviour
+public class playerMovement : MonoBehaviour
 {
     public Rigidbody2D rb;
     public float moveSpeed = 5f;
 
     float horizontalMovement;
+    void Start()
+    {
+
+    }
 
     void Update()
     {
