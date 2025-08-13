@@ -3,6 +3,9 @@ using UnityEngine.InputSystem;
 
 public class playerMovement : MonoBehaviour
 {
+    public Animator animator;
+
+
     public Rigidbody2D rb;
     [Header("Movement")]
     public float moveSpeed = 5f;
@@ -25,6 +28,9 @@ public class playerMovement : MonoBehaviour
     {
         rb.linearVelocity = new Vector2(horizontalMovement * moveSpeed, rb.linearVelocity.y);
         Gravity();
+
+        animator.SetFloat("speed", Mathf.Abs(horizontalMovement));
+
     }
 
     private void Gravity()
