@@ -4,9 +4,8 @@ using UnityEngine.InputSystem;
 public class playerMovement : MonoBehaviour
 {
     public Animator animator;
-
-
     public Rigidbody2D rb;
+
     [Header("Movement")]
     public float moveSpeed = 5f;
     float horizontalMovement;
@@ -24,28 +23,57 @@ public class playerMovement : MonoBehaviour
     public float maxFallSpeed = 18f;
     public float fallGravityMultiplier = 2f;
 
+    // Karakter yönünü takip etmek için
+    private bool facingRight = true;
+
     void Update()
     {
         rb.linearVelocity = new Vector2(horizontalMovement * moveSpeed, rb.linearVelocity.y);
         Gravity();
 
+        // Animasyon parametrelerini güncelle
         animator.SetFloat("speed", Mathf.Abs(horizontalMovement));
 
+        // Karakter yönünü kontrol et ve çevir
+        HandleDirection();
+    }
+
+    private void HandleDirection()
+    {
+        // Saða hareket ediyorsa ve karakter sola bakýyorsa
+        if (horizontalMovement > 0 && !facingRight)
+        {
+            Flip();
+        }
+        // Sola hareket ediyorsa ve karakter saða bakýyorsa
+        else if (horizontalMovement < 0 && facingRight)
+        {
+            Flip();
+        }
+    }
+
+    private void Flip()
+    {
+        facingRight = !facingRight;
+
+        // Karakteri Y ekseninde çevir
+        Vector3 scale = transform.localScale;
+        scale.x *= -1;
+        transform.localScale = scale;
     }
 
     private void Gravity()
     {
         if (rb.linearVelocity.y < 0)
         {
-            rb.gravityScale = baseGravity * fallGravityMultiplier; // daha hýzlý düþüþ için yer çekimini artýr
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, Mathf.Max(rb.linearVelocity.y,-maxFallSpeed));
+            rb.gravityScale = baseGravity * fallGravityMultiplier;
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, Mathf.Max(rb.linearVelocity.y, -maxFallSpeed));
         }
         else
         {
             rb.gravityScale = baseGravity;
         }
     }
-
 
     public void Move(InputAction.CallbackContext context)
     {
@@ -55,18 +83,18 @@ public class playerMovement : MonoBehaviour
     public void Jump(InputAction.CallbackContext context)
     {
         if (isGrounded())
-        { 
-          if (context.performed)
-         {
+        {
+            if (context.performed)
+            {
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-         }
-          else if (context.canceled)
-         {
+            }
+            else if (context.canceled)
+            {
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * 0.5f);
-         }
+            }
         }
     }
-    
+
     private bool isGrounded()
     {
         if (Physics2D.OverlapBox(groundCheckPos.position, groundCheckSize, 0f, groundLayer))
@@ -82,4 +110,3 @@ public class playerMovement : MonoBehaviour
         Gizmos.DrawWireCube(groundCheckPos.position, groundCheckSize);
     }
 }
-
